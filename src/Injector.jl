@@ -1,5 +1,7 @@
 module Injector
 
+export @inject
+
 const fdict = Dict{Symbol, Core.OpaqueClosure}()
 
 macro inject(fname, before = nothing, after = nothing)

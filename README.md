@@ -40,3 +40,15 @@ a(1)
 1
 =#
 ```
+
+A practical example might be to write to a log file:
+```
+a() = 4
+
+# I need to make this work with multi lines better
+@inject a () -> open("log.txt", "a") do f
+            write(f, "Calling a\n")
+        end (x) -> open("log.txt", "a") do f
+            write(f, "Result from a: $(string(x))\n")
+        end
+```

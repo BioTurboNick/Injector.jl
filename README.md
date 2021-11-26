@@ -2,7 +2,7 @@ Injector.jl
 
 Inject code before or after any existing function.
 
-```
+```julia
 
 a(::Int) = 1
 a(::Float64) = 2
@@ -49,13 +49,15 @@ a(1)
 ```
 
 A practical example might be to write to a log file:
-```
+```julia
 a() = 4
 
 # I need to make this work with multi lines better
 @inject a () -> open("log.txt", "a") do f
             write(f, "Calling a\n")
-        end (x) -> open("log.txt", "a") do f
+        end x -> open("log.txt", "a") do f
             write(f, "Result from a: $(string(x))\n")
+        end ex -> open("log.txt", "a") do f
+            write(f, Error! $(string(ex))\n")
         end
 ```

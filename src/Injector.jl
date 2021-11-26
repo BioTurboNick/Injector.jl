@@ -1,8 +1,13 @@
 module Injector
 
+const fdict = Dict{Symbol, Core.OpaqueClosure}()
+
 macro inject(fname, before = nothing, after = nothing)
     f = eval(fname)
-    fbase = Base.Experimental.@opaque (args...) -> f(args...)
+    # avoid interjecting an already-interjected function
+    fbase = haskey(fdict, fname) ?
+        fdict[fname] :
+        Base.Experimental.@opaque (args...) -> f(args...)
     for m ∈ methods(f)
         sig = m.sig
         if m.sig isa UnionAll
@@ -54,6 +59,8 @@ macro inject(fname, before = nothing, after = nothing)
                     block))
         end
     end
+    fdict[fname] = fbase
+    nothing
 end
 
 end # module

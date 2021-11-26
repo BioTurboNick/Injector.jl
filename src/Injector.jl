@@ -6,7 +6,7 @@ export @inject
 
 const fdict = Dict{Symbol, Core.OpaqueClosure}()
 
-macro inject(fname, before = nothing, after = nothing)
+macro inject(fname, before = nothing, after = nothing, onerror = nothing, final = nothing)
     f = eval(fname)
     # avoid interjecting an already-interjected function
     fbase = haskey(fdict, fname) ?
@@ -19,8 +19,18 @@ macro inject(fname, before = nothing, after = nothing)
             if before !== nothing
                 Expr(:call, before)
             end,
-            #Expr(:(=), :fbase, fbase),
-            Expr(:(=), :result, Expr(:call, fbase, [v for v ∈ varnames]...)),
+            Expr(:(=), :result, nothing),
+            Expr(:try,
+                Expr(:(=), :result, Expr(:call, fbase, [v for v ∈ varnames]...)),
+                :ex,
+                if onerror !== nothing
+                    Expr(:||, Expr(:call, onerror, :ex), Expr(:call, :rethrow))
+                else
+                    Expr(:call, :rethrow)
+                end,
+                if onerrorfinally !== nothing
+                    Expr(:call, final)
+                end),
             if after !== nothing
                 Expr(:call, after, :result)
             end,

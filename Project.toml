@@ -1,0 +1,4 @@
+name = "Injector"
+uuid = "92c741dd-08c2-4d93-9816-1f41f59b4e60"
+authors = ["Nicholas Bauer <nicholasbauer@outlook.com>"]
+version = "0.1.0"

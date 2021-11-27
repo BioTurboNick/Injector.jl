@@ -1,4 +1,4 @@
-Injector.jl
+# Injector.jl
 
 Inject code before or after any existing function.
 
@@ -8,13 +8,12 @@ a(::Int) = 1
 a(::Float64) = 2
 a(::Any) = 3
 
-#form: @inject func before() after(funcresult) onerror(ex) final()
-# before() executes prior to the function
-# after(funcresult) executes after the function and is passed the return value of the function, and only if the function does not error
-# onerror(ex) executes if the function throws an exception and is passed the exception; `catch` block
-# final() executes regardless; `finally` block if needed
+#form: @inject func before(args...) after(funcresult) onerror(ex)
+# before(args...) executes prior to the function and is passed the argument values
+# after(funcresult) executes after the function and is passed the return value of the function and the input arguments, and only if the function does not error
+# onerror(ex) executes if the function throws an exception and is passed the exception; `catch` block. If this returns `false`, the exception is rethrown.
 
-@inject a () -> println("hello!") x -> println("world $x!")
+@inject a (args...) -> println("hello!") x -> println("world $x!")
 
 a(1)
 #=
